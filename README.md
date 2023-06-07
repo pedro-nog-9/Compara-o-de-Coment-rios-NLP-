@@ -102,3 +102,29 @@ Aqui o navegador abre automaticamente e é só rolar a página para baixo
 
 # Aplicação dos novos dados nos modelos
 ## Limpeza e tratamento dos novos dados
+### Leitura
+
+A leitura dos novos dados é realizada e logo em seguida eles são misturados com os dados de treinamento. Essa é uma técnica de reamostragem e precisa acontecer aqui pois as features da matriz esparsa precisam atingir o mesmo tamanho e só os dados reais não são o suficiente. Por ter mais dados do que os de treinameto no final, a Matriz esparsa acabará por ser maior no final mas seu tamanho será limitado ao tamanho que o modelo aprendeu. Observe que essa função também retorna o tamanho dos novos dados, isso é necessário para ser possível separá-los dos dados de treinamento no resultado.
+
+![ler dados](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/34c93466-7f59-4e74-9070-ae4a698da08e)
+### Tratamento
+Depois disso, o processo utiliza o mesmo processo de tratamento e limpeza dos dados de treinamento quando foram lidos pela primeira vez. Tokeniza, limpa, remove stopwords e vetoriza.
+
+### Aplicando
+A função resultados aplica os dados novos mais os de treinamento e obtém o resultado de tudo junto. Para ilustrar aqui apenas aplicando no modelo Random Forest, para os outros basta substituir o nome do modelo no código:
+
+![resultados random forest](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/f918ced6-1312-43a9-bf95-70e3678d9dbd)
+
+Na função "Resultado Final" a seguir, os resultados totais foram salvos na pasta e, logo depois, os dados novos foram separados dos dados  de treinamento.
+
+![resultado final](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/158b51ea-d6bc-438d-8d1e-06939e2f4e59)
+
+A função "executa" roda todas as funções anteriores desde a leitura dos novos dados. Como parâmetro ela recebe apenas o nome do arquivo csv dos novos dados e executa tudo. Nela tanbém é implementado um gráfico de barras com os resultados do modelo.
+
+![executa1](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/c139da6d-9839-4ba7-ae4b-383f274eb374)
+![executa2](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/ecf20b67-c099-47ab-ab4a-c3844f41f4b3)
+![executa3](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/55c3ecb0-14e9-49b0-8a2d-eed6fd0fc280)
+
+Aqui os resultados apenas da Random Forest:
+![rotulos_random_forest](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/ed644dcd-7f93-4283-b40f-229396471f9d)
+![rotulos_random_forest2](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/e02dbd50-04d4-4aad-94a4-d814338f757d)
