@@ -111,7 +111,7 @@ A leitura dos novos dados é realizada e logo em seguida eles são misturados co
 Depois disso, o processo utiliza o mesmo processo de tratamento e limpeza dos dados de treinamento quando foram lidos pela primeira vez. Tokeniza, limpa, remove stopwords e vetoriza.
 
 ### Aplicando
-A função resultados aplica os dados novos mais os de treinamento e obtém o resultado de tudo junto. Para ilustrar aqui apenas aplicando no modelo Random Forest, para os outros basta substituir o nome do modelo no código:
+A função resultados aplica os dados novos mais os de treinamento, obtém o resultado de tudo junto e salva esses resultados na pasta. Para ilustrar aqui apenas aplicando no modelo Random Forest, para os outros basta substituir o nome do modelo no código:
 
 ![resultados random forest](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/f918ced6-1312-43a9-bf95-70e3678d9dbd)
 
@@ -128,3 +128,45 @@ A função "executa" roda todas as funções anteriores desde a leitura dos novo
 Aqui os resultados apenas da Random Forest:
 ![rotulos_random_forest](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/ed644dcd-7f93-4283-b40f-229396471f9d)
 ![rotulos_random_forest2](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/e02dbd50-04d4-4aad-94a4-d814338f757d)
+# Avaliação, escolha do melhor modelo e predições de melhorias
+Analisando os Dataframes dos resultados rotulados pelos modelos, pode-se perceber que eles não atingem uma eficiência satisfatória para essa tarefa, uma vez que a rotulagem exige uma precisão maior que a predição por exemplo, enquanto uma predição com 80% de acerto é considerada boa, uma rotulagem com essa porcentagem de acerto não é considerada satisfatória. Nesse caso, isso está acontecendo por conta do tamanho da base de dados de treinamento, 6054 comentários não estão sendo o suficiente para o aprendizado dessa tarefa por esses modelos.
+## Avaliação
+Aqui é calculada a taxa de acerto na aplicação real, diferente daquela que foi calculada no treinamento que tende a ser maior. A função "comparaRotulos" pega os dados reais que foram aplicados e encontra dentro deles os dados de treinamento que foram postos para a reamostragem mas que estão com a rotulagem predita, depois de encontrados eles são extraídos e comparados com os dados de treinamento dos modelos, que possuem a rotulagem correta. Como parâmetro ela recebe os dados de treinamento e os resultados com reamostragem salvos na pasta pela função "resultados". Como resultado, ela imprime a taxa de acerto e retorna um dataframe com os comentários, rótulos preditos, rótulos corretos e acerto/erro.
+
+![compara rotulos](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/40a080c5-5dcc-4140-8ad1-61c6477ef729)
+
+![avaliacao](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/08ce90c0-7978-4ae2-afd4-5a28b53f4170)
+
+Aqui apenas os resultados da Random Forest estão sendo mostrados, todos os resultados foram: Random Forest, 70.87%; SVM, 70.56% e Naive Bayes com 54.54%. Como dito antes, esses valores não são satisfatórios e precisam melhorar. Para investigar como é possível melhorar será feita uma análise estatística dos desempenhos dos modelos. Para isso, foi criado um dataset chamado "comparaModelos.csv". Ele contém as informações dos desempenhos dos modelos relacionados a tamanhos de amostragem diferentes.
+
+![desemepnhos](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/3da5f29f-a09e-4222-a278-9fd9aad1c5f9)
+
+### Correlação
+Começando pela correlação entres as variáveis, tomando "n_amostra" como a variável dependente e as dos modelos como as variáveis independentes, podemos perceber que a SVM apresentou uma correlação bem maior que as outras, mesmo ela não tendo apresentado a melhor taxa de acerto. Contudo a Correlação não nos garante que ela é o melhor modelo e precisamos checar com outras técnicas.
+
+![corr](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/59ff39a3-d29f-4030-ad1d-75d692b43ad4)
+![corr2](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/2493dbe8-2057-494a-8ffb-e9247e69451a)
+
+### Gráficos
+
+Vamos checar agora o gráfico com a curva de aprendizagem dos modelos, ou seja, o comportamento das taxas de acerto à medida que as amostras aumentam de tamanho. Aqui foi utilizado a seaborn e matplotlib.
+
+![grafico](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/b2caf9a8-2d2e-4a06-813d-e46c27fe180d)
+![grafico2](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/d8053b92-9d22-4cbf-9f3b-d1d7aec1dd5e)
+
+As retas levemente inclinadas no ajudaram a perceber que realmente a taxa de aprendizagem é bem pequena e o tamanho da amostra não está sendo o suficiente para os modelos terem um aprendizado satisfatório. Outro ponto importante é o ajuste dos modelos, como ficou claro, a SVM se mostrou muito melhor em se ajustar mais rapidamente do que a Random Forest. Assim, fica mais evidente que o modelo SVM é o melhor. Contudo, análises gráficas não são 100% seguras e precisamos confirmar isso matematicamente.
+
+### Erro Quadrático Médio (MSE) e R²
+Esses dois indicadores mostram a "Força" com que o modelo se ajusta à taxa de aprendizagem. O melhor modelo é aquele que apresenta o menor MSE e o maior R², que como podemos observar abaixo, realmente foi a SVM.
+
+![erros](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/cdb4492d-d76e-44da-a3bb-d80dfc212467)
+
+## Melhor modelo e Melhoria
+
+Como foi comprovado, a SVM é o melhor modelo para executar a tarefa porposta para esse projeto. Contudo, o êxito não foi alcançado devido as limitações na quantidade dos dados de treinamento. Para isso, vamos afirmar que um taxa satisfatória de acerto para esse projeto seria 95% e, a partir disso vamos fazer uma estimativa com um modelo de regressão linear de quantos comentários os dados de treinamento precisam ter para a SVM atingir esse nível de acurácia.
+
+![predicao](https://github.com/pedro-nog-9/Rotulacao_de_Comentarios/assets/127139232/6d3beb83-345d-4668-a2d6-366f71626bde)
+
+## Conclusão
+
+Concluimos que, de acordo com o modelo de regressão linear mostrado acima, para que tenhamos um modelo capaz de rotular os Feedbacks de vendas de celulares no Mercado Livre em "Satisfeito", "Não atendeu as expectativas" e "Surgimento de um problema" o melhor algoritmo encontrado para a aplicação é o Support Vector Machine com um volume de dados para treinamento de 35035 entradas.
